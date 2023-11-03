@@ -1,8 +1,6 @@
 import bs4
 import requests
 import re
-import discord
-from discord.ext import commands
 from datetime import datetime
 
 
