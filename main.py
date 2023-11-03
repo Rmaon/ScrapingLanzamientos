@@ -1,9 +1,6 @@
-import bs4
 import asyncio
-import requests
 import discord
 from discord.ext import commands
-from datetime import datetime
 import LanzamientosHoy
 import LanzamientosProximos
 
@@ -13,7 +10,7 @@ intents.typing = False
 intents.presences = False
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix='@', intents=intents)
 
 urlLanzamientos = "https://vandal.elespanol.com/lanzamientos/0/videojuegos"
 
@@ -45,8 +42,9 @@ async def on_ready():
     print(f'Bot conectado como {bot.user.name}')
 
 @bot.command()
-async def kjuegos(ctx):
+async def jugon(ctx):
     # Enviar mensajes de titulosDiaAAA
+    await ctx.send('\n # BOMBAZOS DEL DIA :bomb:\n')
     mensaje = ''
     for resultado in titulosDiaAAA:
         mensaje += f"[{resultado['titulo']}]({resultado['enlace']})\n\n"
@@ -55,12 +53,13 @@ async def kjuegos(ctx):
     await asyncio.sleep(2)  # Espera 2 segundos antes de enviar el siguiente mensaje
 
     # Enviar mensajes de titulosDiaIndie
+    await ctx.send('\n # Titulos menores\n')
     mensaje = ''
     cont = 0
     proporcion = len(titulosDiaIndie) // 10  # Divide el número total de títulos por 10
 
     for resultado2 in titulosDiaIndie:
-        mensaje += f"{resultado2['plataforma']}   Fecha: {resultado2['fecha']}\nTítulo: {resultado2['titulo']}\n"
+        mensaje += f"{resultado2['plataforma']}   Fecha: {resultado2['fecha']}\nTítulo: {resultado2['titulo']}\n\n"
         cont += 1
 
         if cont == proporcion:
@@ -75,6 +74,7 @@ async def kjuegos(ctx):
     await asyncio.sleep(2)  # Espera 2 segundos antes de enviar el siguiente mensaje
 
     # Enviar mensajes de titulosSemanaAAA
+    await ctx.send('\n # Bombazos de la semana que viene :bomb::bomb:\n')
     mensaje = ''
     for resultado3 in titulosSemanaAAA:
         mensaje += f"Fecha: {resultado3['fecha']}\n[Título: {resultado3['titulo']}]({resultado3['enlace']})\n\n"
