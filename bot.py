@@ -15,6 +15,10 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='@', intents=intents)
 
+# Por motivos de seguridad guardo el token de mi bot en un txt que no publico en el repositorio
+with open('token.txt', 'r') as file:
+    token = file.read().strip()
+
 urlLanzamientos = "https://vandal.elespanol.com/lanzamientos/0/videojuegos"
 
 titulosDiaAAA = LanzamientosHoy.titulosDiariosAAA(urlLanzamientos)
@@ -131,4 +135,4 @@ async def on_ready():
     print(f'Bot conectado como {bot.user.name}')
     event_Lanzamientos.start()
 
-bot.run('MTE2NzQ2MjY4OTkyMTA1Njg4MA.G2TojV.W9g4Vz2WpHJ2Fqf3IHITQKreTG5nw-SsVXdSFM')
+bot.run(token)
