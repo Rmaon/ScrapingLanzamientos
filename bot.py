@@ -119,16 +119,11 @@ async def event_Lanzamientos():
             for juego in videojuegos_SemanaAAA:
                 mensaje = f"Fecha: {juego.fecha}\n[Título: {juego.titulo}]({juego.enlace})\n\n"
                 await channel.send(mensaje)
-                await asyncio.sleep(1)  # Espera 2 segundos antes de enviar el siguiente mensaje
+                await asyncio.sleep(1)  # Espera 1 segundo antes de enviar el siguiente mensaje
 
         print("Mensajes enviados a las", datetime.now())
     except Exception as e:
         print(f"Error al enviar mensajes al canal: {e}")
-
-@bot.command(name='suma')
-async def sumar(ctx, num1: int, num2: int):
-    response = num1 + num2
-    await ctx.send(response)
 
 @bot.event
 async def on_ready():
