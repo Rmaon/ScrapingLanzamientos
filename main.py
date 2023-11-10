@@ -1,16 +1,7 @@
-import asyncio
-import discord
-from discord.ext import commands
+import json
 import LanzamientosHoy
 import LanzamientosProximos
-
-intents = discord.Intents.default()
-
-intents.typing = False
-intents.presences = False
-intents.message_content = True
-
-bot = commands.Bot(command_prefix='@', intents=intents)
+from Videojuego import Videojuego
 
 urlLanzamientos = "https://vandal.elespanol.com/lanzamientos/0/videojuegos"
 
@@ -18,68 +9,71 @@ titulosDiaAAA = LanzamientosHoy.titulosDiariosAAA(urlLanzamientos)
 titulosDiaIndie = LanzamientosHoy.titulosDiariosIndie(urlLanzamientos)
 titulosSemanaAAA = LanzamientosProximos.titulosSemanaAAA(urlLanzamientos)
 
+videojuegos_AAA = []
+videojuegos_Indie = []
+videojuegos_SemanaAAA = []
+
 for resultado in titulosDiaAAA:
-    print("Fecha:", resultado['fecha'])
-    print("Título:", resultado['titulo'])
-    print("Enlace:", resultado['enlace'])
-    print()
+    videojuego = Videojuego(resultado['fecha'], resultado['titulo'], resultado['enlace'])
+    videojuegos_AAA.append(videojuego)
 
 for resultado2 in titulosDiaIndie:
-    print(resultado2['plataforma'])
-    print("Fecha:", resultado2['fecha'])
-    print("Título:", resultado2['titulo'])
-    print()
+    videojuego = Videojuego(resultado2['fecha'], resultado2['titulo'], plataforma=resultado2['plataforma'])
+    videojuegos_Indie.append(videojuego)
 
 for resultado3 in titulosSemanaAAA:
-    print("Fecha:", resultado3['fecha'])
-    print("Título:", resultado3['titulo'])
-    print("Enlace:", resultado3['enlace'])
-    print()
+    videojuego = Videojuego(resultado3['fecha'], resultado3['titulo'], resultado3['enlace'])
+    videojuegos_SemanaAAA.append(videojuego)
 
 
-@bot.event
-async def on_ready():
-    print(f'Bot conectado como {bot.user.name}')
-
-@bot.command()
-async def jugon(ctx):
-    # Enviar mensajes de titulosDiaAAA
-    await ctx.send('\n # BOMBAZOS DEL DIA :bomb:\n')
-    mensaje = ''
-    for resultado in titulosDiaAAA:
-        mensaje += f"[{resultado['titulo']}]({resultado['enlace']})\n\n"
-
-    await ctx.send(mensaje)
-    await asyncio.sleep(2)  # Espera 2 segundos antes de enviar el siguiente mensaje
-
-    # Enviar mensajes de titulosDiaIndie
-    await ctx.send('\n # Titulos menores\n')
-    mensaje = ''
-    cont = 0
-    proporcion = len(titulosDiaIndie) // 10  # Divide el número total de títulos por 10
-
-    for resultado2 in titulosDiaIndie:
-        mensaje += f"{resultado2['plataforma']}   Fecha: {resultado2['fecha']}\nTítulo: {resultado2['titulo']}\n\n"
-        cont += 1
-
-        if cont == proporcion:
-            await ctx.send(mensaje)
-            mensaje = ''  # Reinicia el mensaje
-            cont = 0
-
-    # Enviar el mensaje restante (si es menor que proporcion)
-    if mensaje:
-        await ctx.send(mensaje)
-
-    await asyncio.sleep(2)  # Espera 2 segundos antes de enviar el siguiente mensaje
-
-    # Enviar mensajes de titulosSemanaAAA
-    await ctx.send('\n # Bombazos de la semana que viene :bomb::bomb:\n')
-    mensaje = ''
-    for resultado3 in titulosSemanaAAA:
-        mensaje += f"Fecha: {resultado3['fecha']}\n[Título: {resultado3['titulo']}]({resultado3['enlace']})\n\n"
-    await ctx.send(mensaje)
-    await asyncio.sleep(2)  # Espera 2 segundos antes de enviar el siguiente mensaje
+def verLanzamientosAAA():
+    for juego in videojuegos_AAA:
+        juego.mostrar_datos()
 
 
-bot.run('MTE2NzQ2MjY4OTkyMTA1Njg4MA.G2TojV.W9g4Vz2WpHJ2Fqf3IHITQKreTG5nw-SsVXdSFM')
+def verLanzamientosHoy():
+    for juego in videojuegos_Indie:
+        juego.mostrar_datos()
+
+
+def verLanzamientosSemanaQueViene():
+    for juego in videojuegos_SemanaAAA:
+        juego.mostrar_datos()
+
+
+def guardarAJson(datos, nombre_archivo):
+    with open(nombre_archivo, 'w', encoding='utf-8') as archivo:
+        json.dump(datos, archivo, ensure_ascii=False, indent=2)
+
+
+while True:
+    # Mostrar el menú
+    print("BOMBAZO INFORMATIVO :")
+    print("1. Ver Lanzamientos AAA de hoy")
+    print("2. Ver lanzamientos menores de hoy")
+    print("3. Ver lanzamientos de la semana que viene")
+    print("4. Guardar en json toda la informacion posible")
+    print("5. Salir")
+
+    # Obtener la opción del usuario
+    opcion = input("Selecciona una opción (1-5): ")
+
+    # Evaluar la opción seleccionada
+    if opcion == "1":
+        verLanzamientosAAA()
+    elif opcion == "2":
+        verLanzamientosHoy()
+    elif opcion == "3":
+        verLanzamientosSemanaQueViene()
+    elif opcion == "4":
+        guardarAJson({
+            "titulosDiaAAA": titulosDiaAAA,
+            "titulosDiaIndie": titulosDiaIndie,
+            "titulosSemanaAAA": titulosSemanaAAA
+        }, 'datosCompletos.json')
+        print("Datos guardados en 'datosCompletos.json'")
+    elif opcion == "5":
+        print("¡Hasta luego!")
+        break
+    else:
+        print("Opción no válida. Por favor, selecciona una opción válida.")
