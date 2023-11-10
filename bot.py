@@ -6,29 +6,35 @@ import LanzamientosProximos
 from Videojuego import Videojuego
 from datetime import datetime
 
-
+# Crear una instancia de la clase Intents para personalizar las intenciones del bot
 intents = discord.Intents.default()
 
+# Desactivar ciertas intenciones para mejorar la eficiencia y seguridad
 intents.typing = False
 intents.presences = False
 intents.message_content = True
 
+# Crear una instancia del bot con el prefijo de comando y las intenciones personalizadas
 bot = commands.Bot(command_prefix='@', intents=intents)
 
 # Por motivos de seguridad guardo el token de mi bot en un txt que no publico en el repositorio
 with open('token.txt', 'r') as file:
     token = file.read().strip()
 
+# URL de la página de lanzamientos de videojuegos
 urlLanzamientos = "https://vandal.elespanol.com/lanzamientos/0/videojuegos"
 
+# Obtener títulos diarios AAA, diarios Indie y de la próxima semana AAA
 titulosDiaAAA = LanzamientosHoy.titulosDiariosAAA(urlLanzamientos)
 titulosDiaIndie = LanzamientosHoy.titulosDiariosIndie(urlLanzamientos)
 titulosSemanaAAA = LanzamientosProximos.titulosSemanaAAA(urlLanzamientos)
 
+# Listas para almacenar instancias de la clase Videojuego
 videojuegos_AAA = []
 videojuegos_Indie = []
 videojuegos_SemanaAAA = []
 
+# Crear instancias de Videojuego y agregarlas a las listas correspondientes
 for resultado in titulosDiaAAA:
     videojuego = Videojuego(resultado['fecha'], resultado['titulo'], resultado['enlace'])
     videojuegos_AAA.append(videojuego)
@@ -41,12 +47,15 @@ for resultado3 in titulosSemanaAAA:
     videojuego = Videojuego(resultado3['fecha'], resultado3['titulo'], resultado3['enlace'])
     videojuegos_SemanaAAA.append(videojuego)
 
+# Evento que se ejecuta cuando el bot se conecta
 @bot.event
 async def on_ready():
     print(f'Bot conectado como {bot.user.name}')
 
+# Función asincrónica para ejecutar un comando cada 24 horas
 async def ejecutar_comando():
     try:
+        # ID del canal donde se ejecutará el comando
         channel_id = 1095471189960433759
 
         # Obtener el canal
@@ -56,6 +65,7 @@ async def ejecutar_comando():
         ctx = await bot.get_context(await channel.send("@jogos"))
         await bot.invoke(ctx)
 
+        # Esperar 5 segundos después de ejecutar el comando
         await asyncio.sleep(5)
 
         print("Comando ejecutado a las", datetime.now())
@@ -65,15 +75,17 @@ async def ejecutar_comando():
         # Esperar 24 horas antes de ejecutar la función nuevamente
         await asyncio.sleep(86400)
 
-
+# Función principal asincrónica que ejecuta la función anterior en bucle
 async def main():
     while True:
         await ejecutar_comando()
         await asyncio.sleep(1)
 
+# Tarea programada que se ejecuta cada 24 horas para enviar mensajes de lanzamientos de videojuegos
 @tasks.loop(hours=24)
 async def event_Lanzamientos():
     try:
+        # ID del canal donde se enviarán los mensajes
         channel_id = 1095471189960433759
 
         # Obtener el canal
@@ -87,12 +99,13 @@ async def event_Lanzamientos():
             for juego in videojuegos_AAA:
                 mensaje = f"[{juego.titulo}]({juego.enlace})\n\n"
                 await channel.send(mensaje)
-                await asyncio.sleep(2)  # Espera 2 segundos antes de enviar el siguiente mensaje
+                # Espera 2 segundos antes de enviar el siguiente mensaje
+                await asyncio.sleep(2)
 
         if not videojuegos_Indie:
-            await channel.send('\n # Hoy no han salido titulos menores...')
+            await channel.send('\n # Hoy no han salido títulos menores...')
         else:
-            await channel.send('\n # Titulos menores\n')
+            await channel.send('\n # Títulos menores\n')
             mensaje = ''
             cont = 0
             proporcion = len(videojuegos_Indie) // 10  # Divide el número total de títulos por 10
@@ -104,13 +117,14 @@ async def event_Lanzamientos():
                 if cont == proporcion:
                     await channel.send(mensaje)
                     mensaje = ''  # Reinicia el mensaje
-                    cont = 0
+                    # Espera 1 segundo antes de enviar el siguiente mensaje
                     await asyncio.sleep(1)
 
             if mensaje:
                 await channel.send(mensaje)
 
-            await asyncio.sleep(2)  # Espera 2 segundos antes de enviar el siguiente mensaje
+            # Espera 2 segundos antes de enviar el siguiente mensaje
+            await asyncio.sleep(2)
 
         if not videojuegos_SemanaAAA:
             await channel.send('\n # La semana que viene no hay bombazos...')
@@ -119,15 +133,18 @@ async def event_Lanzamientos():
             for juego in videojuegos_SemanaAAA:
                 mensaje = f"Fecha: {juego.fecha}\n[Título: {juego.titulo}]({juego.enlace})\n\n"
                 await channel.send(mensaje)
-                await asyncio.sleep(1)  # Espera 1 segundo antes de enviar el siguiente mensaje
+                # Espera 1 segundo antes de enviar el siguiente mensaje
+                await asyncio.sleep(1)
 
         print("Mensajes enviados a las", datetime.now())
     except Exception as e:
         print(f"Error al enviar mensajes al canal: {e}")
 
+# Evento que se ejecuta cuando el bot se conecta; inicia la tarea programada
 @bot.event
 async def on_ready():
     print(f'Bot conectado como {bot.user.name}')
     event_Lanzamientos.start()
 
+# Ejecutar el bot con el token
 bot.run(token)
