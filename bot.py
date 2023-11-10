@@ -17,14 +17,11 @@ intents.message_content = True
 # Crear una instancia del bot con el prefijo de comando y las intenciones personalizadas
 bot = commands.Bot(command_prefix='@', intents=intents)
 
-<<<<<<< Updated upstream
-=======
-# Leer el token del archivo 'token.txt'
+# Por motivos de seguridad guardo el token de mi bot en un txt que no publico en el repositorio
 with open('token.txt', 'r') as file:
     token = file.read().strip()
 
 # URL de la página de lanzamientos de videojuegos
->>>>>>> Stashed changes
 urlLanzamientos = "https://vandal.elespanol.com/lanzamientos/0/videojuegos"
 
 # Obtener títulos diarios AAA, diarios Indie y de la próxima semana AAA
@@ -149,9 +146,5 @@ async def on_ready():
     print(f'Bot conectado como {bot.user.name}')
     event_Lanzamientos.start()
 
-<<<<<<< Updated upstream
-bot.run('MTE2NzQ2MjY4OTkyMTA1Njg4MA.G2TojV.W9g4Vz2WpHJ2Fqf3IHITQKreTG5nw-SsVXdSFM')
-=======
 # Ejecutar el bot con el token
 bot.run(token)
->>>>>>> Stashed changes
