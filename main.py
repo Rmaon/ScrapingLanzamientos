@@ -48,12 +48,14 @@ def guardarAJson(datos, nombre_archivo):
 
 while True:
     # Mostrar el menú
-    print("BOMBAZO INFORMATIVO :")
+    print('````````````````````````````````````````````````')
+    print("         BOMBAZO INFORMATIVO :")
     print("1. Ver Lanzamientos AAA de hoy")
     print("2. Ver lanzamientos menores de hoy")
     print("3. Ver lanzamientos de la semana que viene")
     print("4. Guardar en json toda la informacion posible")
     print("5. Salir")
+    print('````````````````````````````````````````````````')
 
     # Obtener la opción del usuario
     opcion = input("Selecciona una opción (1-5): ")
