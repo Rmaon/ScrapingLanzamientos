@@ -46,14 +46,11 @@ def titulosDiariosIndie(urlLanzamientos):
         resultLanzamiento = requests.get(urlLanzamientos)
         soupLanzamientos = bs4.BeautifulSoup(resultLanzamiento.text, 'html.parser')
 
-        # Definir una expresión regular para verificar si el texto es una fecha en el formato "d/m/yyyy" o "dd/mm/yyyy"
         date_pattern = re.compile(r'\d{1,2}/\d{1,2}/\d{4}')
 
-        # Obtener la fecha actual formateada
         fecha_formato_pagina = "%d/%m/%Y"
         fechaHoy = datetime.now().date()
 
-        # Encontrar las tablas que cumplan con ciertos criterios
         tablas = soupLanzamientos.select('table.table.table-striped.froboto_real')
         data_list = []
 
